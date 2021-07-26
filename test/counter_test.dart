@@ -65,6 +65,44 @@ void main() {
       c.increment();
     });
 
+    test('Counter exists, is valid, and decrements properly once via Rx', () {
+      final Counter c = Counter();
+      expect(c, isNotNull);
+      expect(c.value, 0);
+      expectLater(c.counterStream,
+        emitsInOrder([emits(-1)]),// NOTE: I can catchall with "anything"
+     );
+      c.decrement();
+    });
+
+    test('Counter exists, is valid, and increments properly a random amount up to 300 via Rx', () {
+      final Counter c = Counter();
+      expect(c, isNotNull);
+      expect(c.value, 0);
+      var rng = Random(DateTime.now().microsecondsSinceEpoch);
+      final repetitions = rng.nextInt(300);
+      expectLater(c.counterStream,
+          emitsThrough(repetitions),
+      );
+      for (var i = 0; i < repetitions; i++) {
+        c.increment();
+      }
+    });
+
+    test('Counter exists, is valid, and decrements properly a random amount up to 300 via Rx', () {
+      final Counter c = Counter();
+      expect(c, isNotNull);
+      expect(c.value, 0);
+      var rng = Random(DateTime.now().microsecondsSinceEpoch);
+      final repetitions = rng.nextInt(300);
+      expectLater(c.counterStream,
+        emitsThrough(-repetitions),
+      );
+      for (var i = 0; i < repetitions; i++) {
+        c.decrement();
+      }
+    });
+
     test('Counter exists, stream is closed properly when dispose is called', () {
       final Counter c = Counter();
       expect(c, isNotNull);
