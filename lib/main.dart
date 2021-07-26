@@ -1,3 +1,4 @@
+import 'package:bananas/src/Counter.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -60,17 +61,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+
+  // Please don't use joke names IRL ;)
+  Counter _dracula = Counter();
 
   void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    // setState(() {
+    //   // WE COULD USE   THIS STILL - BUT HERE IT IS MORE PRACTICAL TO BUILD THE (sub)WIDGET ON THE FLY
+    //   // We will use a StreamBuilder in this example
+    // });
+    _dracula.increment();
   }
 
   @override
@@ -108,12 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              'I need more bananas:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            new StreamBuilder(stream: _dracula.counterStream, builder: (context, AsyncSnapshot<dynamic> snapshot){
+              // since we use a streambuilder, we have two options
+              // option 1: stream  composition (a bit more advanced...)
+              // option 2: null-checked value for the initial display
+              return new Text('${snapshot.data ?? 0} bananas are not enough!', style: Theme.of(context).textTheme.headline4);
+            })
           ],
         ),
       ),
@@ -124,4 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  @override
+  void dispose() {
+    _dracula.dispose();
+    super.dispose();
+  }
+
 }
